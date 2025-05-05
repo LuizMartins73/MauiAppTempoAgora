@@ -9,6 +9,8 @@ namespace MauiAppTempoAgora.Models
 {
     internal class Tempo
     {
+
+        public double? lon { get; set; }
         public double? lat {  get; set; }
         public double? temp_min { get; set; }
         public double? temp_max { get; set; }

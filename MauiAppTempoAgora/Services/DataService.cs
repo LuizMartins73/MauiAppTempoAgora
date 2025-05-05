@@ -6,10 +6,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using MauiAppTempoAgora.Models;
+using Newtonsoft.Json.Linq;
 
 namespace MauiAppTempoAgora.Services
 {
-    public class DataService
+    internal class DataService
     {
         public static async Task<Tempo?> GetPrevisao(string cidade)
         {
@@ -18,11 +19,11 @@ namespace MauiAppTempoAgora.Services
 
             string url = $"https://api.openweathermap.org/data/2.5/weather?" + $"q={cidade}&units=metricappid={chave}";
 
-            using (HttpClient client = new HttpClient()) 
+            using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage resp = await client.GetAsync(url);
 
-                if (resp.IsSuccessStatusCode) 
+                if (resp.IsSuccessStatusCode)
                 {
                     string json = await resp.Content.ReadAsStringAsync();
 
@@ -34,7 +35,22 @@ namespace MauiAppTempoAgora.Services
 
                     t = new()
                     {
-                        lat = (double)ras
-                    }
-                }
+                        lat = (double)rascunho["coord"]["lat"],
+                        lon = (double)rascunho["coord"]["lon"],
+                        description = (string)rascunho["weather"][0]["description"],
+                        main = (string)rascunho["weather"][0]["main"],
+                        temp_min = (double)rascunho["main"]["tempo_min"],
+                        temp_max = (double)rascunho["wind"]["speed"],
+                        speed = (double)rascunho["wind"]["speed"],
+                        visibility = (int)rascunho["visibility"],
+                        sunrise = sunrise.ToString(),
+                        sunset = sunset.ToString(),
+                    }; // Fecha obj do tempo.
+                } // Fecha if se o status do servidor foi de sucesso
+            } // Fecha laço using
+
+            return t;
+        }
+    }
 }
+      
